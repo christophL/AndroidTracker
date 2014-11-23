@@ -1,9 +1,9 @@
 <?php
 	//call example:
 	//http://localhost/infsecApp/store.php?IMEI=1234567890&LAT=34.9999&LONG=23.4444
-	$imei = htmlspecialchars($_GET["IMEI"]);
-	$lat = htmlspecialchars($_GET["LAT"]);
-	$long = htmlspecialchars($_GET["LONG"]);
+	$imei = htmlspecialchars($_POST["IMEI"]);
+	$lat = htmlspecialchars($_POST["LAT"]);
+	$long = htmlspecialchars($_POST["LONG"]);
 
 	$servername = "localhost";
 	$username = "root";
