@@ -32,6 +32,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/txtLog"
             android:gravity="center_horizontal"
-            android:textColor="#ff00ff29" />
+            android:textColor="@android:color/black" />
     </ScrollView>
 </LinearLayout>

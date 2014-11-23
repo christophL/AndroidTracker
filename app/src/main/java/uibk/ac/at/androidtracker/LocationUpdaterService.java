@@ -2,11 +2,13 @@ package uibk.ac.at.androidtracker;
 
 import android.app.Activity;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.TelephonyManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -14,6 +16,19 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationUpdaterService
         extends IntentService
@@ -23,6 +38,7 @@ public class LocationUpdaterService
     public static final String UPDATE_DATA_STATUS = "uibk.ac.at.helloworld.STATUS";
     public static final String UPDATE_DATA_LOCATION = "uibk.ac.at.helloworld.LOCATION";
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private static String imei = null;
 
     public static final String ACTION_START_UPDATING = "uibk.ac.at.helloworld.action.START_UPDATING";
 
@@ -36,6 +52,7 @@ public class LocationUpdaterService
     public void onCreate(){
         super.onCreate();
         client = new LocationClient(this, this, this);
+        loadDeviceId();
     }
 
     @Override
@@ -109,8 +126,19 @@ public class LocationUpdaterService
     @Override
     public void onLocationChanged(Location location) {
         System.out.println("in location Changed");
-        String locationString = "Location Update: " + String.valueOf(location.getLatitude())
-                + ", " + String.valueOf(location.getLongitude());
+        String latitude = String.valueOf(location.getLatitude());
+        String longitude = String.valueOf(location.getLongitude());
+        String locationString = "Location Update: " + latitude
+                + ", " + longitude;
         sendUpdateBroadcast(UPDATE_DATA_LOCATION, locationString);
+        new PostLocationTask().execute(imei, latitude, longitude);
     }
+
+    private void loadDeviceId(){
+        if(imei != null) return;
+        TelephonyManager tmgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        imei = tmgr.getDeviceId();
+    }
+
+
 }
