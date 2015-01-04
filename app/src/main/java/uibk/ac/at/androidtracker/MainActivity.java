@@ -11,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -52,9 +54,25 @@ public class MainActivity extends Activity {
      */
     public void sendMessage(View view){
         Button btn = (Button) findViewById(R.id.btnSend);
+        EditText txtInterval = (EditText) findViewById(R.id.txtUpdateInterval);
+        int interval;
+        try{
+            int parsed = Integer.parseInt(txtInterval.getText().toString());
+            if(parsed < 1){
+                Toast.makeText(this, "Update interval needs to be >= 1", Toast.LENGTH_LONG).show();
+                return;
+            }
+            interval = parsed;
+        } catch(NumberFormatException e) {
+            Toast.makeText(this, "Could not parse provided update interval", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         btn.setEnabled(false);
+        txtInterval.setEnabled(false);
         Intent intent = new Intent(this, LocationUpdaterService.class);
         intent.setAction(LocationUpdaterService.ACTION_START_UPDATING);
+        intent.putExtra(LocationUpdaterService.EXTRA_UPDATE_INTERVAL, interval);
         startService(intent);
     }
 

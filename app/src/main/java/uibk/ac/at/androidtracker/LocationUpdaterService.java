@@ -34,16 +34,18 @@ public class LocationUpdaterService
         extends IntentService
         implements GooglePlayServicesClient.ConnectionCallbacks,
             GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
-    public static final String UPDATE_ACTION_BROADCAST = "uibk.ac.at.helloworld.UPDATE";
-    public static final String UPDATE_DATA_STATUS = "uibk.ac.at.helloworld.STATUS";
-    public static final String UPDATE_DATA_LOCATION = "uibk.ac.at.helloworld.LOCATION";
+    public static final String UPDATE_ACTION_BROADCAST = "uibk.ac.at.androidtracker.UPDATE";
+    public static final String UPDATE_DATA_STATUS = "uibk.ac.at.androidtracker.STATUS";
+    public static final String UPDATE_DATA_LOCATION = "uibk.ac.at.androidtracker.LOCATION";
+    public static final String EXTRA_UPDATE_INTERVAL = "uibk.ac.at.androidtracker.UPDATEINTERVAL";
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static String imei = null;
 
-    public static final String ACTION_START_UPDATING = "uibk.ac.at.helloworld.action.START_UPDATING";
+    public static final String ACTION_START_UPDATING = "uibk.ac.at.androidtracker.action.START_UPDATING";
 
     private LocationClient client;
     private LocationRequest locRequest;
+    private int updateInterval;
 
     public LocationUpdaterService() {
         super("LocationUpdaterService");
@@ -61,6 +63,7 @@ public class LocationUpdaterService
             final String action = intent.getAction();
 
             if (ACTION_START_UPDATING.equals(action)) {
+                updateInterval = intent.getIntExtra(EXTRA_UPDATE_INTERVAL, 60);
                 handleActionStartUpdating();
             }
         }
@@ -75,7 +78,7 @@ public class LocationUpdaterService
     @Override
     public void onConnected(Bundle bundle) {
         locRequest = LocationRequest.create();
-        locRequest.setInterval(1000*60);
+        locRequest.setInterval(1000*updateInterval);
         locRequest.setFastestInterval(2000);
         locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         client.requestLocationUpdates(locRequest, this);
