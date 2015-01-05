@@ -16,8 +16,11 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Update Interval (s):"
             android:id="@+id/lblInterval"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="5dp" />
+            android:layout_below="@+id/cbAdmin"
+            android:layout_alignLeft="@+id/btnSend"
+            android:layout_alignStart="@+id/btnSend"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -29,7 +32,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp" />
+            android:layout_marginLeft="10dp" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -53,14 +56,24 @@
             android:inputType="number"
             android:ems="10"
             android:id="@+id/txtUpdateInterval"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/lblInterval"
-            android:layout_marginTop="17dp"
             android:singleLine="true"
             android:text="60"
-            android:layout_marginLeft="5dp"
-            android:layout_alignRight="@+id/btnSend"
-            android:layout_alignEnd="@+id/btnSend" />
+            android:layout_below="@+id/cbAdmin"
+            android:layout_toRightOf="@+id/lblInterval" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device Administration Enabled"
+            android:id="@+id/cbAdmin"
+            android:onClick="onCbAdminClicked"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:clickable="true"
+            android:enabled="true" />
 
     </RelativeLayout>
 
