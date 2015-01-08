@@ -8,23 +8,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class MainActivity extends Activity{
-
-    public static final String EXTRA_MESSAGE = "uibk.ac.at.helloworld.MESSAGE";
     private static final int REQUEST_CODE_ENABLE_ADMIN = 1;
-    private static String imei;
+    private boolean updatesActive;
 
     private DevicePolicyManager dpm;
     private ComponentName receiverName;
@@ -41,10 +37,25 @@ public class MainActivity extends Activity{
         dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         receiverName = new ComponentName(this, AdminWipeLockReceiver.class);
         cbAdmin.setChecked(isAdminActive());
+
+        if(savedInstanceState != null){
+            TextView log = (TextView) findViewById(R.id.txtLog);
+            log.setText(savedInstanceState.getCharSequence("curLog"));
+
+            updatesActive = savedInstanceState.getBoolean("updatesActive");
+            enableControls(!updatesActive);
+        }
     }
 
     private boolean isAdminActive(){
         return dpm.isAdminActive(receiverName);
+    }
+
+    private void enableControls(boolean enable){
+        Button btnUpdates = (Button) findViewById(R.id.btnSend);
+        EditText txtInterval = (EditText) findViewById(R.id.txtUpdateInterval);
+        btnUpdates.setEnabled(enable);
+        txtInterval.setEnabled(enable);
     }
 
     @Override
@@ -66,12 +77,19 @@ public class MainActivity extends Activity{
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outBundle){
+        super.onSaveInstanceState(outBundle);
+        TextView log = (TextView) findViewById(R.id.txtLog);
+        outBundle.putCharSequence("curLog", log.getText());
+        outBundle.putBoolean("updatesActive", updatesActive);
+    }
+
     /**
      * Called when the user clicks the Send button
      * @param view the clicked button
      */
     public void sendMessage(View view){
-        Button btn = (Button) findViewById(R.id.btnSend);
         EditText txtInterval = (EditText) findViewById(R.id.txtUpdateInterval);
         int interval;
         try{
@@ -86,8 +104,8 @@ public class MainActivity extends Activity{
             return;
         }
 
-        btn.setEnabled(false);
-        txtInterval.setEnabled(false);
+        updatesActive = true;
+        enableControls(false);
         Intent intent = new Intent(this, LocationUpdaterService.class);
         intent.setAction(LocationUpdaterService.ACTION_START_UPDATING);
         intent.putExtra(LocationUpdaterService.EXTRA_UPDATE_INTERVAL, interval);
@@ -116,6 +134,5 @@ public class MainActivity extends Activity{
         } else {
             cbAdmin.setChecked(false);
         }
-
     }
 }
