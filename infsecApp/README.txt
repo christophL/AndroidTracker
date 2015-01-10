@@ -1,5 +1,5 @@
 Starting point: 
-start.php - if you have already registered a username to your IMEI
+login.php - if you have already registered a username to your IMEI
 OR
 register.php - if you want to register a username to your IMEI
 

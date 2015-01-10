@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<?php
+	session_start();
+	if($_SESSION['authenticated'] != 'yes') {
+		exit("You are not authorised to access this page!");
+	}
+?>
 <html>
   <head>
     <style>
@@ -16,7 +22,9 @@
 		   var vars = query.split("&");
 		   for (var i=0;i<vars.length;i++) {
 		           var pair = vars[i].split("=");
-		           if(pair[0] == variable){return pair[1];}
+		           if(pair[0] == variable){
+						return pair[1];
+					}
 		   }
 		   return(false);
 	}
@@ -43,19 +51,34 @@
 			if(timeA < timeB) return -1;
 			return 0;
 		});
+
+		var coordinates = [];
 		//now print the sorted list using the iteration variable as icon for the markers
         for (var i = 0; i < markersArray.length; i++) {
           var point = new google.maps.LatLng(
               parseFloat(markersArray[i].getAttribute("lat")),
               parseFloat(markersArray[i].getAttribute("long")));
+		  coordinates[i] = point;
           var marker = new google.maps.Marker({
             map: map,
             position: point,
 			icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+i+"|AEEEEE|000000"
           });
-	//to add information after clicking on marker
+			//to add information after clicking on marker
           //bindInfoWindow(marker, map, infoWindow, html);
         }
+
+	  //add line to connect markers to form path
+	  var path = new google.maps.Polyline({
+		path: coordinates,
+		geodesic: true,
+		strokeColor: '#000000',
+		strokeOpacity: 0.5,
+		strokeWeight: 2
+	  });
+
+	  path.setMap(map);
+
       });
     }
 
@@ -82,6 +105,15 @@
   </head>
   <body onload="load()">
     <div id="map_canvas"></div>
+	<br>
+	<br>
+
+	<FORM NAME ="logout" METHOD ="POST" ACTION ="logout.php">
+	<P align = left>
+	<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Logout">
+	</P>
+
+	</FORM>
   </body>
 </html>
 

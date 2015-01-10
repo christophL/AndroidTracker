@@ -1,7 +1,6 @@
 <?PHP
 
 $uname = "";
-$imei = "";
 $pw = "";
 $errorMessage = "";
 //==========================================
@@ -23,11 +22,9 @@ function quote_smart($value, $handle) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$uname = $_POST['username'];
 	$pw = $_POST['password'];
-	$imei = $_POST['imei'];
 
 	$uname = htmlspecialchars($uname);
 	$pw = htmlspecialchars($pw);
-	$imei = htmlspecialchars($imei);
 
 	//==========================================
 	//	CONNECT TO THE LOCAL DATABASE
@@ -44,62 +41,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
  	   die("Connection failed: " . $conn->connect_error);
 	} 
 
-	//compute hash of password, and store it instead of plaintext pw
+	//compute hash of pw to check with the one saved in DB
 	$pw = sha1($pw);
+	$pw = quote_smart($pw, $conn);
 
 	//escape characters
 	$uname = quote_smart($uname, $conn);
-	$pw = quote_smart($pw, $conn);
-	$imei = quote_smart($imei, $conn);
 
-	//check whether IMEI is already registered
-	$query = "SELECT * FROM users WHERE IMEI = $imei";
+	$query = "SELECT IMEI FROM users WHERE USERNAME = $uname AND PASSWORD = $pw";
 	$result = $conn->query($query);
-	if($result->num_rows != 0) {
-		$conn->close();
-		exit("Error: IMEI already exists!");
-	}
-
-	//check whether username already exists
-	$query = "SELECT * FROM users WHERE USERNAME = $uname";
-	$result = $conn->query($query);
-	if($result->num_rows != 0) {
-		$conn->close();
-		exit("Error: username already exists!");
-	}
-
-	$query = "INSERT INTO users ( IMEI, USERNAME, PASSWORD) VALUES ($imei, $uname, $pw)";
-
-	if ($conn->query($query) === TRUE) {
+	if($result->num_rows == 1) {
+		$row = $result->fetch_assoc();
+		$imei = $row["IMEI"];
 		$conn->close();
 		session_start();
 		$_SESSION['authenticated'] = 'yes';
 		header("Location: map.php?IMEI=$imei");
 	} else {
+		//username or pw wrong
 		$conn->close();
 		echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }
 ?>
 
-
 <html>
 <head>
-<title>Register new user</title>
+<title>Show your phone activity</title>
 </head>
 <body>
-Register your IMEI:
-<FORM NAME ="form1" METHOD ="POST" ACTION ="register.php">
+Login to see what your phone has been up to:
 <br>
+<br>
+
+<FORM NAME ="form1" METHOD ="POST" ACTION ="login.php">
 
 Username: <INPUT TYPE = 'TEXT' Name ='username'  value="<?PHP print $uname;?>" maxlength="100">
 <br>
 Password: <INPUT TYPE = 'PASSWORD' Name ='password'  value="<?PHP print $pw;?>" maxlength="100">
 <br>
-IMEI: <INPUT TYPE = 'TEXT' Name ='imei'  value="<?PHP print $imei;?>" maxlength="15">
-
 <P align = left>
-<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Register">
+<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Show">
 </P>
 
 </FORM>
