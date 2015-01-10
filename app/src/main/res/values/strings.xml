@@ -8,5 +8,6 @@
     <string name="button_send">Start Location Updates</string>
     <string name="title_activity_display_message">My Message</string>
     <string name="action_search">Search</string>
+    <string name="admin_explanation">Android Tracker needs to be registered as a Device Administration app to use remote locking/wiping</string>
 
 </resources>

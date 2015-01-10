@@ -24,10 +24,10 @@ public class PostLocationTask extends AsyncTask<String, Void, Void> {
         String longitude = params[2];
 
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://192.168.1.111/infsecApp/store.php");
+        HttpPost httppost = new HttpPost("http://192.168.1.101/infsecApp/store.php");
 
         try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            List<NameValuePair> nameValuePairs = new ArrayList<>(3);
             nameValuePairs.add(new BasicNameValuePair("IMEI", imei));
             nameValuePairs.add(new BasicNameValuePair("LAT", latitude));
             nameValuePairs.add(new BasicNameValuePair("LONG", longitude));
@@ -36,8 +36,6 @@ public class PostLocationTask extends AsyncTask<String, Void, Void> {
             // Execute HTTP Post Request
             HttpResponse response = httpclient.execute(httppost);
 
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
