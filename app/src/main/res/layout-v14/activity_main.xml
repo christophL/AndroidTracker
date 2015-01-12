@@ -75,6 +75,16 @@
             android:clickable="true"
             android:enabled="true" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Device Lock"
+            android:id="@+id/btnLock"
+            android:layout_below="@+id/btnSend"
+            android:layout_alignLeft="@+id/btnSend"
+            android:layout_alignStart="@+id/btnSend"
+            android:onClick="onBtnLockClick" />
+
     </RelativeLayout>
 
 </LinearLayout>

@@ -34,9 +34,9 @@ public class MainActivity extends Activity{
         LocalBroadcastManager.getInstance(this).registerReceiver(new LocationReceiver(this), filter);
 
         CheckBox cbAdmin = (CheckBox) findViewById(R.id.cbAdmin);
+        Button btnLock = (Button) findViewById(R.id.btnLock);
         dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         receiverName = new ComponentName(this, AdminWipeLockReceiver.class);
-        cbAdmin.setChecked(isAdminActive());
 
         if(savedInstanceState != null){
             TextView log = (TextView) findViewById(R.id.txtLog);
@@ -45,6 +45,9 @@ public class MainActivity extends Activity{
             updatesActive = savedInstanceState.getBoolean("updatesActive");
             enableControls(!updatesActive);
         }
+        boolean adminActive = isAdminActive();
+        cbAdmin.setChecked(adminActive);
+        btnLock.setEnabled(adminActive);
     }
 
     private boolean isAdminActive(){
@@ -110,6 +113,11 @@ public class MainActivity extends Activity{
         intent.setAction(LocationUpdaterService.ACTION_START_UPDATING);
         intent.putExtra(LocationUpdaterService.EXTRA_UPDATE_INTERVAL, interval);
         startService(intent);
+    }
+
+    public void onBtnLockClick(View view){
+        dpm.resetPassword("secret", 0);
+        dpm.lockNow();
     }
 
     public void onCbAdminClicked(View view) {
