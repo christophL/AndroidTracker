@@ -137,10 +137,14 @@ public class MainActivity extends Activity{
         if(requestCode != REQUEST_CODE_ENABLE_ADMIN) return;
 
         CheckBox cbAdmin = (CheckBox) findViewById(R.id.cbAdmin);
+        Button btnLock = (Button) findViewById(R.id.btnLock);
         if(resultCode == Activity.RESULT_OK){
             cbAdmin.setChecked(true);
+            btnLock.setEnabled(true);
+
         } else {
             cbAdmin.setChecked(false);
+            btnLock.setEnabled(false);
         }
     }
 }
