@@ -2,6 +2,7 @@
 
 $uname = "";
 $pw = "";
+$imei = "";
 $errorMessage = "";
 //==========================================
 //	ESCAPE DANGEROUS SQL CHARACTERS
@@ -69,23 +70,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 <html>
 <head>
 <title>Show your phone activity</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $("#register").slideToggle();
+  });
+});
+</script>
 </head>
 <body>
 Login to see what your phone has been up to:
 <br>
 <br>
 
-<FORM NAME ="form1" METHOD ="POST" ACTION ="login.php">
+<FORM NAME ="form1" METHOD ="POST" ACTION ="index.php">
 
 Username: <INPUT TYPE = 'TEXT' Name ='username'  value="<?PHP print $uname;?>" maxlength="100">
 <br>
 Password: <INPUT TYPE = 'PASSWORD' Name ='password'  value="<?PHP print $pw;?>" maxlength="100">
 <br>
 <P align = left>
-<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Show">
+<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Login">
 </P>
 
 </FORM>
+
+<button>Or register here!</button>
+<br>
+<div id="register" style="display:none">
+<FORM NAME ="form1" METHOD ="POST" ACTION ="register.php">
+<br>
+
+Username: <INPUT TYPE = 'TEXT' Name ='username'  value="<?PHP print $uname;?>" maxlength="100">
+<br>
+Password: <INPUT TYPE = 'PASSWORD' Name ='password'  value="<?PHP print $pw;?>" maxlength="100">
+<br>
+IMEI: <INPUT TYPE = 'TEXT' Name ='imei'  value="<?PHP print $imei;?>" maxlength="15">
+
+<P align = left>
+<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Register">
+</P>
+
+</FORM>
+</div>
 
 <P>
 <?PHP print $errorMessage;?>

@@ -84,29 +84,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 ?>
 
 
-<html>
-<head>
-<title>Register new user</title>
-</head>
-<body>
-Register your IMEI:
-<FORM NAME ="form1" METHOD ="POST" ACTION ="register.php">
-<br>
-
-Username: <INPUT TYPE = 'TEXT' Name ='username'  value="<?PHP print $uname;?>" maxlength="100">
-<br>
-Password: <INPUT TYPE = 'PASSWORD' Name ='password'  value="<?PHP print $pw;?>" maxlength="100">
-<br>
-IMEI: <INPUT TYPE = 'TEXT' Name ='imei'  value="<?PHP print $imei;?>" maxlength="15">
-
-<P align = left>
-<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Register">
-</P>
-
-</FORM>
-
-<P>
-<?PHP print $errorMessage;?>
-
-</body>
-</html>
