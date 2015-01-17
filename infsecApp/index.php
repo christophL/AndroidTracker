@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	} else {
 		//username or pw wrong
 		$conn->close();
-		echo "Error: " . $query . "<br>" . $conn->error;
+		header("Location: login.php");
+		//echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }
 ?>

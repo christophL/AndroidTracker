@@ -77,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		header("Location: map.php?IMEI=$imei");
 	} else {
 		$conn->close();
-		echo "Error: " . $query . "<br>" . $conn->error;
+		//TODO: proper error management
+		//echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }
 ?>
