@@ -20,7 +20,7 @@
 
 	// Select all the rows in the markers table with the given IMEI
 	$imei = htmlspecialchars($_GET["IMEI"]);
-	$query = "SELECT LATITUDE, LONGITUDE, TIME FROM coordinates WHERE IMEI = $imei";
+	$query = "SELECT LATITUDE, LONGITUDE, TIME, ACCURACY FROM coordinates WHERE IMEI = $imei";
 	$result = $conn->query($query);
 
 	if (!$result) {
@@ -35,6 +35,7 @@
 	  $newnode = $parnode->appendChild($node);
 	  $newnode->setAttribute("lat",$row['LATITUDE']);
 	  $newnode->setAttribute("long", $row['LONGITUDE']);
+	  $newnode->setAttribute("accuracy", $row['ACCURACY']);
 	  $newnode->setAttribute("time", $row['TIME']);
 	}
 

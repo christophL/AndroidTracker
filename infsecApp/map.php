@@ -7,10 +7,12 @@
 ?>
 <html>
   <head>
+
+	<link rel="stylesheet" type="text/css" href="css/style.css">
     <style>
       #map_canvas {
-        width: 1000px;
-        height: 600px;
+        width: 800px;
+        height: 550px;
       }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -53,19 +55,32 @@
 		});
 
 		var coordinates = [];
+		var point;
 		//now print the sorted list using the iteration variable as icon for the markers
         for (var i = 0; i < markersArray.length; i++) {
-          var point = new google.maps.LatLng(
+          point = new google.maps.LatLng(
               parseFloat(markersArray[i].getAttribute("lat")),
               parseFloat(markersArray[i].getAttribute("long")));
 		  coordinates[i] = point;
           var marker = new google.maps.Marker({
             map: map,
             position: point,
-			icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+i+"|AEEEEE|000000"
+			icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+i+"|AEEEEE|000000",
+			title: markersArray[i].getAttribute("time")
           });
-			//to add information after clicking on marker
-          //bindInfoWindow(marker, map, infoWindow, html);
+		  //add circle showing the accuracy
+		  var accuracy = markersArray[i].getAttribute("accuracy");
+		  if(accuracy > 0) {
+			  var options = {
+				center: point,
+				map: map,
+				strokeColor: '#000000',
+				radius:  parseInt(accuracy)
+			  }
+			  var circle = new google.maps.Circle(options);
+		  }
+		  //set center of google map to last point
+		  map.setCenter(point);
         }
 
 	  //add line to connect markers to form path
@@ -104,6 +119,10 @@
     </script>
   </head>
   <body onload="load()">
+	<div class="appName">
+	AndroidTracker
+	</div>
+	<div id="contentDiv">
     <div id="map_canvas"></div>
 	<br>
 	<br>
@@ -114,6 +133,7 @@
 	</P>
 
 	</FORM>
+	</div>
   </body>
 </html>
 
