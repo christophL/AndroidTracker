@@ -16,12 +16,12 @@ public class LocationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         TextView log = (TextView) activity.findViewById(R.id.txtLog);
-        if(intent.hasExtra(LocationUpdaterService.UPDATE_DATA_LOCATION)){
-            log.append(intent.getStringExtra(LocationUpdaterService.UPDATE_DATA_LOCATION));
+        if(intent.hasExtra(LocationUpdaterService.EXTRA_LOCATION)){
+            log.append(intent.getStringExtra(LocationUpdaterService.EXTRA_LOCATION));
             log.append("\n");
         }
-        if(intent.hasExtra(LocationUpdaterService.UPDATE_DATA_STATUS)){
-            log.append(intent.getStringExtra(LocationUpdaterService.UPDATE_DATA_STATUS));
+        if(intent.hasExtra(LocationUpdaterService.EXTRA_STATUS)){
+            log.append(intent.getStringExtra(LocationUpdaterService.EXTRA_STATUS));
             log.append("\n");
         }
      }
