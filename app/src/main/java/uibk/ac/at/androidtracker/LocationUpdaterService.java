@@ -44,7 +44,6 @@ public class LocationUpdaterService
     public static final String BROADCAST_CMD_RECEIVED = "uibk.ac.at.androidtracker.CMD_RECEIVED";
     public static final String BROADCAST_LOCATION_UPDATE = "uibk.ac.at.androidtracker.LOCATION_UPDATE";
 
-
     public static final String EXTRA_UPDATE_INTERVAL = "uibk.ac.at.androidtracker.UPDATEINTERVAL";
     public static final String EXTRA_CMD = "uibk.ac.at.androidtracker.EXTRA_CMD";
     public static final String EXTRA_DATA = "uibk.ac.at.androidtracker.EXTRA_DATA";
