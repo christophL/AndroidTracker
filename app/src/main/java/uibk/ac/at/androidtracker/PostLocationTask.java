@@ -1,0 +1,181 @@
+package uibk.ac.at.androidtracker;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Pair;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
+public class PostLocationTask extends AsyncTask<String, Void, Pair<String, String>> {
+    public static final String BROADCAST_CMD_RECEIVED = "uibk.ac.at.androidtracker.CMD_RECEIVED";
+    public static final String EXTRA_CMD = "uibk.ac.at.androidtracker.EXTRA_CMD";
+    public static final String EXTRA_DATA = "uibk.ac.at.androidtracker.EXTRA_DATA";
+
+    private Context ctx;
+    private SSLContext sslCtx;
+
+    public PostLocationTask(Context ctx){
+        super();
+        this.ctx = ctx;
+    }
+
+    private HttpsURLConnection createConnection(){
+        if(sslCtx == null){
+            initSsl();
+        }
+        HttpsURLConnection conn = null;
+        try {
+            URL servUrl = new URL("https://192.168.1.101/infsecApp/store.php");
+            conn = (HttpsURLConnection) servUrl.openConnection();
+            conn.setSSLSocketFactory(sslCtx.getSocketFactory());
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return conn;
+    }
+
+    private void initSsl(){
+        String keyStoreType = KeyStore.getDefaultType();
+        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            InputStream caInput =  new BufferedInputStream(ctx.getResources().openRawResource(R.raw.server));
+            Certificate cert = cf.generateCertificate(caInput);
+            caInput.close();
+
+            KeyStore store = KeyStore.getInstance(keyStoreType);
+            store.load(null, null);
+            store.setCertificateEntry("server", cert);
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(store);
+
+            sslCtx = SSLContext.getInstance("TLS");
+            sslCtx.init(null, tmf.getTrustManagers(), null);
+        } catch (CertificateException | IOException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String makeQuery(List<NameValuePair> params){
+        StringBuilder res = new StringBuilder();
+        boolean isFirst = true;
+
+        for(NameValuePair p : params){
+            if(isFirst) isFirst = false;
+            else res.append('&');
+
+            try {
+                res.append(URLEncoder.encode(p.getName(), "UTF-8"));
+                res.append('=');
+                res.append(URLEncoder.encode(p.getValue(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return res.toString();
+    }
+
+    private Pair<String, String> parseJsonResponse(String response){
+        try {
+            JSONObject obj = new JSONObject(response);
+            if(obj.has("cmd")){
+                String cmd = obj.getString("cmd");
+                String data = obj.getString("data");
+                return new Pair<>(cmd, data);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected Pair<String, String> doInBackground(String... params) {
+        String imei = params[0];
+        String latitude = params[1];
+        String longitude = params[2];
+        String accuracy = params[3];
+
+        HttpsURLConnection conn = null;
+        try {
+            conn = createConnection();
+            List<NameValuePair> postParams = new ArrayList<>(3);
+            postParams.add(new BasicNameValuePair("IMEI", imei));
+            postParams.add(new BasicNameValuePair("LAT", latitude));
+            postParams.add(new BasicNameValuePair("LONG", longitude));
+            postParams.add(new BasicNameValuePair("ACCURACY", accuracy));
+
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(), "UTF-8"));
+            writer.write(makeQuery(postParams));
+            writer.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line, response = "";
+            while((line = reader.readLine()) != null){
+                response += line;
+            }
+            reader.close();
+            return parseJsonResponse(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(Pair<String, String> result){
+        if(result != null){
+            sendCmdBroadcast(result.first, result.second);
+        }
+    }
+
+    private void sendCmdBroadcast(String cmd, String data){
+        Intent cmdIntent = new Intent(BROADCAST_CMD_RECEIVED);
+        cmdIntent.putExtra(EXTRA_CMD, cmd);
+        cmdIntent.putExtra(EXTRA_DATA, data);
+        LocalBroadcastManager.getInstance(ctx).sendBroadcast(cmdIntent);
+    }
+}

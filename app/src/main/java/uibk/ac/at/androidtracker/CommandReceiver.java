@@ -12,9 +12,9 @@ public class CommandReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.hasExtra(LocationUpdaterService.EXTRA_CMD)){
-            String cmd = intent.getStringExtra(LocationUpdaterService.EXTRA_CMD);
-            String data = intent.getStringExtra(LocationUpdaterService.EXTRA_DATA);
+        if(intent.hasExtra(PostLocationTask.EXTRA_CMD)){
+            String cmd = intent.getStringExtra(PostLocationTask.EXTRA_CMD);
+            String data = intent.getStringExtra(PostLocationTask.EXTRA_DATA);
             switch(cmd){
                 case "lock": sendLockDevice(data);
             }
