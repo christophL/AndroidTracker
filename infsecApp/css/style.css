@@ -1,3 +1,9 @@
+#map_canvas {
+
+	margin-left: auto;
+	margin-right:auto;
+}
+
 .appName {
 	text-align:center;
 	font-size: 40px;
@@ -30,12 +36,50 @@
 	display:none;
 }
 
-#contentDiv {
+#lockDiv{
+	float:left;
+	background-image: url("footer_lodyas.png");
+	display:none;
+}
 
+#wipeDiv{
+	display:none;
+}
+
+#menu {
+	float:left;
+	background-image: url("footer_lodyas.png");
+	border-style: inset;
+	border-width:5px;
+	border-color:black;
+	width:390px;
+}
+
+.placeholderDiv{
+	max-width:100%;
+	float:left;
+	background-color:black;
+}
+
+#contentDiv {
+	position:fixed;
 	margin-top:0px;
 	text-align:center;
 	background-image: url("congruent_pentagon.png");
 	height: 100%;
+	width:100%;
+}
+
+.menuButton {
+	float:left;
+}
+
+#lockButton {
+	float:left;
+}
+
+#wipeButton {
+	float:left;
 }
 
 .centerButton {
@@ -57,9 +101,9 @@ table {
 	margin:auto;
 }
 
-div.vertical-line{
-  width: 0px; /* Use only border style */
-  height: 100%;
-  float: left; 
-  border: 1px inset; /* This is default border style for <hr> tag */
+#map_canvas {
+		float:left;
+		margin-top:50px;
+        width: 800px;
+        height: 550px;
 }

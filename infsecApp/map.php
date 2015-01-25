@@ -4,19 +4,17 @@
 	if($_SESSION['authenticated'] != 'yes') {
 		exit("You are not authorised to access this page!");
 	}
+
+	$imei = $_GET['IMEI'];
 ?>
 <html>
   <head>
 
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-    <style>
-      #map_canvas {
-        width: 800px;
-        height: 550px;
-      }
-    </style>
+   	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script>
+	
 	//This function is used to parse the http GET value given to this site
 	function getQueryVariable(variable)
 	{
@@ -117,22 +115,78 @@
     function doNothing() {}
 
     </script>
+	<script>
+		$(document).ready(function(){
+		  $("#lockButton").click(function(){
+			$("#lockDiv").slideToggle();
+		  });
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+		  $("#wipeButton").click(function(){
+			var wipe = confirm("Do you really want to wipe your whole device?");
+			if(wipe == true) {
+				document.forms["wipeForm"].submit();
+			}
+		  });
+		});
+	</script>
+
   </head>
   <body onload="load()">
 	<div class="appName">
 	AndroidTracker
 	</div>
 	<div id="contentDiv">
-    <div id="map_canvas"></div>
-	<br>
-	<br>
+	<div id="menu">
+		<button id="lockButton">Lock your device</button>
+		<button id="wipeButton">Wipe your device</button>
+		<FORM NAME ="logout" METHOD ="POST" ACTION ="logout.php">
+		<INPUT class="menuButton" TYPE = "Submit" Name = "Submit1"  VALUE = "Logout">
+		</FORM>
+		<div id="lockDiv">
+					<FORM NAME ="form1" METHOD ="POST" ACTION ="lock.php">
+						<table>
+							<tr>
+								<td>New password:</td> <td><INPUT TYPE = 'PASSWORD' Name ='password'  value="" maxlength="100"></td>
+							</tr>
+							<tr>
+								<td>Repeat password:</td> <td> <INPUT TYPE = 'PASSWORD' Name ='password_repeat'  value="" maxlength="100"> </td>
+							</tr>
+							<tr style="display:none">
+								<td></td> <td> <INPUT TYPE = 'TEXT' Name ='imei'  value="<?PHP print $imei;?>" maxlength="15"> </td>
+							</tr>
+				
+							<tr>
+								<td colspan="2"><INPUT class="centerButton" TYPE = "Submit" Name = "Submit1"  VALUE = "Note lockdown request!"></td>
+							</tr>
+						</table>
+					</FORM>
+		</div>
+		<div id="wipeDiv">
+					<FORM NAME ="wipeForm" METHOD ="POST" ACTION ="wipe.php">
+						<table>
+							<tr style="display:none">
+								<td></td> <td> <INPUT TYPE = 'TEXT' Name ='imei'  value="<?PHP print $imei;?>" maxlength="15"> </td>
+							</tr>
+				
+							<tr>
+								<td colspan="2"><INPUT class="centerButton" TYPE = "Submit" Name = "Submit1"  VALUE = "Note lockdown request!"></td>
+							</tr>
+						</table>
+					</FORM>
+		</div>
+	</div>
+	<div class="placeholderDiv">
 
-	<FORM NAME ="logout" METHOD ="POST" ACTION ="logout.php">
-	<P align = left>
-	<INPUT TYPE = "Submit" Name = "Submit1"  VALUE = "Logout">
-	</P>
+	</div>
 
-	</FORM>
+    <div id="map_canvas">
+
+	</div>
+
 	</div>
   </body>
 </html>
