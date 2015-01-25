@@ -29,6 +29,7 @@
 	//check whether new coordinates differ substantially from last received ones
 	$query = "SELECT * FROM coordinates WHERE TIME = ( select max(TIME) from coordinates WHERE IMEI=$imei)";
 	$result = $conn->query($query);
+	$do_insert = TRUE;
 	if($result->num_rows == 1) {
 		$row = $result->fetch_assoc();
 		//formula for computation of distance between two coordinates taken from here
@@ -53,18 +54,20 @@
 		$meters = $angle * $earthRadius;
 
 		//if new coordinates are more than minMetersDiff located from the old ones
-		if($meters > $minMetersDiff) {
-			$query = "INSERT INTO coordinates (IMEI, LATITUDE, LONGITUDE,ACCURACY) VALUES ($imei, $lat, $long,$acc)";
+		if($meters <= $minMetersDiff) {
+			$do_insert = FALSE;
+			//echo "No new record created, too close to last received one!";
+		}
+	}
+	if($do_insert){
+	  $query = "INSERT INTO coordinates (IMEI, LATITUDE, LONGITUDE,ACCURACY) VALUES ($imei, $lat, $long,$acc)";
 
 			if ($conn->query($query) === TRUE) {
-				echo "New record created successfully";
+				//echo "New record created successfully";
 			} else {
 				die("Error: no new record could be created!");
 			}
-		} else {
-			echo "No new record created, too close to last received one!";
-		}
-	} 
+	}
 	
 	//check whether we want to send something back
 	$query = "SELECT TO_LOCK, NEW_PHONE_PW, WIPE FROM users WHERE IMEI=$imei";
