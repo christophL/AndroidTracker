@@ -16,7 +16,8 @@ public class CommandReceiver extends BroadcastReceiver {
             String cmd = intent.getStringExtra(PostLocationTask.EXTRA_CMD);
             String data = intent.getStringExtra(PostLocationTask.EXTRA_DATA);
             switch(cmd){
-                case "lock": sendLockDevice(data);
+                case "lock": sendLockDevice(data); break;
+                case "wipe": sendWipeDevice(data); break;
             }
         }
     }
@@ -24,4 +25,5 @@ public class CommandReceiver extends BroadcastReceiver {
     private void sendLockDevice(String data){
         activity.lockDevice(data);
     }
+    private void sendWipeDevice(String data) { activity.wipeDevice(data); }
 }

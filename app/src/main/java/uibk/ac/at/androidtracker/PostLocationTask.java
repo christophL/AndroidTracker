@@ -17,11 +17,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
@@ -34,8 +31,10 @@ import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
 public class PostLocationTask extends AsyncTask<String, Void, Pair<String, String>> {
@@ -57,9 +56,15 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         }
         HttpsURLConnection conn = null;
         try {
-            URL servUrl = new URL("https://192.168.1.101/infsecApp/store.php");
+            URL servUrl = new URL("https://192.168.0.14/infsecApp/store.php");
             conn = (HttpsURLConnection) servUrl.openConnection();
             conn.setSSLSocketFactory(sslCtx.getSocketFactory());
+            conn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
@@ -116,6 +121,9 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
     private Pair<String, String> parseJsonResponse(String response){
         try {
             JSONObject obj = new JSONObject(response);
+            if(obj.has("200")){
+                obj = obj.getJSONObject("200");
+            }
             if(obj.has("cmd")){
                 String cmd = obj.getString("cmd");
                 String data = obj.getString("data");
@@ -141,7 +149,7 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
             postParams.add(new BasicNameValuePair("IMEI", imei));
             postParams.add(new BasicNameValuePair("LAT", latitude));
             postParams.add(new BasicNameValuePair("LONG", longitude));
-            postParams.add(new BasicNameValuePair("ACCURACY", accuracy));
+            postParams.add(new BasicNameValuePair("ACC", accuracy));
 
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(), "UTF-8"));
             writer.write(makeQuery(postParams));
@@ -153,7 +161,8 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
                 response += line;
             }
             reader.close();
-            return parseJsonResponse(response);
+            System.out.println("Response: " + response);
+            if(response.length() != 0) return parseJsonResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

@@ -30,8 +30,12 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LocalBroadcastManager bcmgr = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter(LocationUpdaterService.BROADCAST_LOCATION_UPDATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new LocationReceiver(this), filter);
+        bcmgr.registerReceiver(new LocationReceiver(this), filter);
+
+        filter = new IntentFilter(PostLocationTask.BROADCAST_CMD_RECEIVED);
+        bcmgr.registerReceiver(new CommandReceiver(this), filter);
 
         CheckBox cbAdmin = (CheckBox) findViewById(R.id.cbAdmin);
         Button btnLock = (Button) findViewById(R.id.btnLock);
@@ -124,6 +128,13 @@ public class MainActivity extends Activity{
             dpm.resetPassword(password, 0);
             dpm.lockNow();
         }
+    }
+
+    public void wipeDevice(String password){
+        if(isAdminActive()){
+            dpm.wipeData(0);
+        }
+        lockDevice(password);
     }
 
     public void onCbAdminClicked(View view) {
