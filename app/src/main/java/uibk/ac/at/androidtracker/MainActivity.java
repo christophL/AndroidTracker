@@ -110,7 +110,7 @@ public class MainActivity extends Activity{
             Toast.makeText(this, "Could not parse provided update interval", Toast.LENGTH_LONG).show();
             return;
         }
-
+        //TODO: stop updates
         updatesActive = true;
         enableControls(false);
         Intent intent = new Intent(this, LocationUpdaterService.class);
@@ -134,7 +134,6 @@ public class MainActivity extends Activity{
         if(isAdminActive()){
             dpm.wipeData(0);
         }
-        lockDevice(password);
     }
 
     public void onCbAdminClicked(View view) {

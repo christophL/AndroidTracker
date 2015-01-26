@@ -40,7 +40,7 @@
             android:id="@+id/svLog"
             android:layout_gravity="center_horizontal"
             android:fillViewport="true"
-            android:layout_below="@+id/btnSend">
+            android:layout_below="@+id/btnLock">
     
             <TextView
                 android:layout_width="wrap_content"
