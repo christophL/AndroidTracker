@@ -1,0 +1,49 @@
+\frametitle{\LaTeX presentation template}
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+\color{red}\rule{\linewidth}{4pt}
+
+Itemization is easy
+
+\begin{itemize}
+  \item One
+    \item Two
+    \item[Three] .
+\end{itemize}
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+\color{blue}\rule{\linewidth}{4pt}
+
+Enumeration just as well
+  \begin{enumerate}
+    \item An Item
+    \item Another
+    \item[Yet] Another
+  \end{enumerate}
+
+\end{column}%
+\end{columns}
+
+%  Itemization is easy:
+%  \begin{itemize}
+%    \item One
+%    \item Two
+%    \item[Three] .
+%  \end{itemize}
+%  Enumeration as well:
+%  \begin{enumerate}
+%    \item An Item
+%    \item Another
+%    \item[Yet] Another
+%  \end{enumerate}
+  $$\text{Math might be fun for some: } e^i\pi +1 = 0$$
+Coding is fun:
+  \begin{lstlisting}
+  #include <stdio.h>
+
+  int main(int argc, char **argv)
+  {
+     printf("Hello World!");
+  }
+  \end{lstlisting}
