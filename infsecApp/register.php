@@ -20,6 +20,18 @@ function quote_smart($value, $handle) {
    return $value;
 }
 
+function generateSHA512Salt() {
+	//16 char salt, but first three are given
+	$length = 13;
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./';
+    $charactersLength = strlen($characters);
+    $randomString = '$6$';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[mt_rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$uname = $_POST['username'];
 	$pw = $_POST['password'];
@@ -43,14 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	if ($conn->connect_error) {
  	   die("Connection failed: " . $conn->connect_error);
 	} 
+	
+	//check whether imei consists of 15 digits!
+	$pattern = '/^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/';
+	if(!preg_match($pattern, $imei)) {
+		die("Error: IMEI does not consist of 15 digits!\n");
+	}
 
 	//compute hash of password, and store it instead of plaintext pw
-	$pw = sha1($pw);
+	$salt = generateSHA512Salt();
+	$pw = crypt($pw,$salt);
 
 	//escape characters
 	$uname = quote_smart($uname, $conn);
 	$pw = quote_smart($pw, $conn);
 	$imei = quote_smart($imei, $conn);
+	$salt = quote_smart($salt, $conn);
 
 	//check whether IMEI is already registered
 	$query = "SELECT * FROM users WHERE IMEI = $imei";
@@ -68,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		exit("Error: username already exists!");
 	}
 
-	$query = "INSERT INTO users ( IMEI, USERNAME, PASSWORD) VALUES ($imei, $uname, $pw)";
+	$query = "INSERT INTO users ( IMEI, USERNAME, PASSWORD, SALT) VALUES ($imei, $uname, $pw, $salt)";
 
 	if ($conn->query($query) === TRUE) {
 		$conn->close();
@@ -77,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		header("Location: map.php?IMEI=$imei");
 	} else {
 		$conn->close();
-		//TODO: proper error management
 		//echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }

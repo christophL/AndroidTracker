@@ -60,11 +60,12 @@
               parseFloat(markersArray[i].getAttribute("lat")),
               parseFloat(markersArray[i].getAttribute("long")));
 		  coordinates[i] = point;
+		  var text = markersArray[i].getAttribute("time").concat("\nAccuracy: +-").concat(markersArray[i].getAttribute("accuracy")).concat(" meters");
           var marker = new google.maps.Marker({
             map: map,
             position: point,
 			icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+i+"|AEEEEE|000000",
-			title: markersArray[i].getAttribute("time")
+			title: text
           });
 		  //add circle showing the accuracy
 		  var accuracy = markersArray[i].getAttribute("accuracy");

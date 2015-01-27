@@ -42,18 +42,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
  	   die("Connection failed: " . $conn->connect_error);
 	} 
 
-	//compute hash of pw to check with the one saved in DB
-	$pw = sha1($pw);
-	$pw = quote_smart($pw, $conn);
-
 	//escape characters
 	$uname = quote_smart($uname, $conn);
 
-	$query = "SELECT IMEI FROM users WHERE USERNAME = $uname AND PASSWORD = $pw";
+	$query = "SELECT IMEI, PASSWORD FROM users WHERE USERNAME = $uname";
 	$result = $conn->query($query);
 	if($result->num_rows == 1) {
 		$row = $result->fetch_assoc();
 		$imei = $row["IMEI"];
+		$storedPw = $row["PASSWORD"];
+		if(crypt($pw, $storedPw) != $storedPw) {
+			die("Error: wrong password!\n");
+		}
 		$conn->close();
 		session_start();
 		$_SESSION['authenticated'] = 'yes';

@@ -56,7 +56,11 @@
 		//if new coordinates are more than minMetersDiff located from the old ones
 		if($meters <= $minMetersDiff) {
 			$do_insert = FALSE;
-			//echo "No new record created, too close to last received one!";
+			//no new record is created BUT the timestamp of the last one is updated
+			$lat = $row["LATITUDE"];
+			$lon = $row["LONGITUDE"];
+			$query = "UPDATE coordinates SET TIME=NOW() WHERE IMEI=$imei AND LATITUDE=$lat AND LONGITUDE=$lon";
+			$result = $conn->query($query);
 		}
 	}
 	if($do_insert){
