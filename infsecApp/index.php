@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	//	CONNECT TO THE LOCAL DATABASE
 	//==========================================
 	$servername = "localhost";
-	$username = "root";
-	$password = "";
+	$username = "infsecApp";
+	$password = "changeMe";
 	$dbname = "infsecApp";
 
 	// Create connection

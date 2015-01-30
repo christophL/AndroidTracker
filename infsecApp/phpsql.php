@@ -7,8 +7,8 @@
 	$parnode = $dom->appendChild($node);
 
 	$servername = "localhost";
-	$username = "root";
-	$password = "";
+	$username = "infsecApp";
+	$password = "changeMe";
 	$dbname = "infsecApp";
 
 	// Create connection
