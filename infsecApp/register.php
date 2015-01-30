@@ -20,18 +20,6 @@ function quote_smart($value, $handle) {
    return $value;
 }
 
-function generateSHA512Salt() {
-	//16 char salt, but first three are given
-	$length = 13;
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./';
-    $charactersLength = strlen($characters);
-    $randomString = '$6$';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[mt_rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$uname = $_POST['username'];
 	$pw = $_POST['password'];
@@ -62,8 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		die("Error: IMEI does not consist of 15 digits!\n");
 	}
 
+	//check whether password is empty
+	if($pw == "") {
+		die("Error: the chosen password is empty!");
+	}
+
 	//compute hash of password, and store it instead of plaintext pw
-	$salt = generateSHA512Salt();
 	$pw = password_hash($pw, PASSWORD_BCRYPT);
 
 	//escape characters
@@ -96,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		header("Location: map.php?IMEI=$imei");
 	} else {
 		$conn->close();
-		//echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }
 ?>

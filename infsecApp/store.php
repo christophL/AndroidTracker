@@ -88,7 +88,7 @@
 	//send http response
 	//this either communicates the wish to lock the phone or to wipe it
 	//first check if the phone should be wiped
-	//if yes, ignore locking
+	//if yes, ignore locking up until next response
 	if($to_wipe == TRUE) {
 		$query = "UPDATE users SET WIPE=0";
 		$result = $conn->query($query);

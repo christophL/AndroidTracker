@@ -4,11 +4,12 @@ $uname = "";
 $pw = "";
 $imei = "";
 $errorMessage = "";
+
 //==========================================
 //	ESCAPE DANGEROUS SQL CHARACTERS
 //==========================================
 function quote_smart($value, $handle) {
-	//echo $value;
+
    if (get_magic_quotes_gpc()) {
        $value = stripslashes($value);
    }
@@ -16,7 +17,7 @@ function quote_smart($value, $handle) {
    if (!is_numeric($value)) {
        $value = "'" . mysqli_real_escape_string($handle, $value) . "'";
    }
-	//echo $value;
+
    return $value;
 }
 
@@ -47,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 	$query = "SELECT IMEI, PASSWORD FROM users WHERE USERNAME = $uname";
 	$result = $conn->query($query);
+	//if there is exactly one user with this username, check whether password fits
 	if($result->num_rows == 1) {
 		$row = $result->fetch_assoc();
 		$imei = $row["IMEI"];
@@ -62,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		//username or pw wrong
 		$conn->close();
 		header("Location: index.php");
-		//echo "Error: " . $query . "<br>" . $conn->error;
 	}
 }
 ?>

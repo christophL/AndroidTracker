@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <?php
+	//check whether user is logged in
 	session_start();
 	if($_SESSION['authenticated'] != 'yes') {
 		exit("You are not authorised to access this page!");
@@ -30,6 +31,7 @@
 	}
 
 	function load() {
+		//create the map
     	var map = new google.maps.Map(document.getElementById("map_canvas"), {
         	center: new google.maps.LatLng(47.2649028, 11.3963183),
         	zoom: 14,
@@ -37,8 +39,10 @@
     	});
    		var infoWindow = new google.maps.InfoWindow;
 
-      	// 
 		var imei = getQueryVariable("IMEI");
+
+		//phpsql queries the database for all coordinates associated with the given IMEI
+		//and returns it as a xml-file
      	downloadUrl("phpsql.php?IMEI="+imei, function(data) {
         var xml = data.responseXML;
         var markers = xml.documentElement.getElementsByTagName("marker");
@@ -52,6 +56,7 @@
 			return 0;
 		});
 
+		//save all created points
 		var coordinates = [];
 		var point;
 		//now print the sorted list using the iteration variable as icon for the markers
@@ -101,18 +106,22 @@
           new ActiveXObject('Microsoft.XMLHTTP') :
           new XMLHttpRequest;
 
+	  //add listener to the status of the XMLHttpRequest
       request.onreadystatechange = function() {
+		//readyState == 4 => request finished and response is ready
         if (request.readyState == 4) {
+		  //if request state changes again, do nothing
           request.onreadystatechange = doNothing;
+		  //forward the result of the request (xml) to the callback function
           callback(request, request.status);
         }
       };
 
+	  //send request to server
       request.open('GET', url, true);
       request.send(null);
     }
 
-	//TODO: why do we need this function?
     function doNothing() {}
 
     </script>
