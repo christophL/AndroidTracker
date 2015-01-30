@@ -13,6 +13,12 @@ public class LocationReceiver extends BroadcastReceiver {
         this.activity = activity;
     }
 
+    /**
+     * Called when location updates are received from the location service.
+     * Logs the updated location in the main activity's log view
+     * @param context the context from which the broadcast was sent (i.e. the location service)
+     * @param intent the intent containing the broadcast information
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         TextView log = (TextView) activity.findViewById(R.id.txtLog);

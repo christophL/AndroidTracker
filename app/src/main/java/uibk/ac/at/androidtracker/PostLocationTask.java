@@ -42,14 +42,23 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
     public static final String EXTRA_CMD = "uibk.ac.at.androidtracker.EXTRA_CMD";
     public static final String EXTRA_DATA = "uibk.ac.at.androidtracker.EXTRA_DATA";
 
+    /**
+     * The context (i.e. activity) which called the task - needed to send the broadcast intent
+     * and open the raw resource containing our self-signed certificate
+     */
     private Context ctx;
-    private SSLContext sslCtx;
+    private static SSLContext sslCtx;
 
     public PostLocationTask(Context ctx){
         super();
         this.ctx = ctx;
     }
 
+    /**
+     * Creates a HTTPS connection to the server using the customized SSL context
+     * (see initSsl())
+     * @return the HTTPS connection object
+     */
     private HttpsURLConnection createConnection(){
         if(sslCtx == null){
             initSsl();
@@ -59,6 +68,7 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
             URL servUrl = new URL("https://192.168.0.14/infsecApp/store.php");
             conn = (HttpsURLConnection) servUrl.openConnection();
             conn.setSSLSocketFactory(sslCtx.getSocketFactory());
+            //no need to do verification, we only trust our own certificate anyways
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -76,6 +86,10 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         return conn;
     }
 
+    /**
+     * Sets up the SSL context to trust our self-signed server certificate (and nothing else)
+     * The context is only set-up once and reused later
+     */
     private void initSsl(){
         String keyStoreType = KeyStore.getDefaultType();
         String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
@@ -99,6 +113,12 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         }
     }
 
+    /**
+     * Transforms the provided parameters into a parameter string for HTTP-POSTS
+     * (param1=value1&param2=value2&...)
+     * @param params the parameters to be encoded into the string
+     * @return the POST parameter string
+     */
     private String makeQuery(List<NameValuePair> params){
         StringBuilder res = new StringBuilder();
         boolean isFirst = true;
@@ -118,6 +138,13 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         return res.toString();
     }
 
+    /**
+     * Parses the JSON-encode server response.
+     * Expected responses are of the following form:
+     * { "200": { "cmd": "aCommand", "data": "dataRequiredForTheCommand" } }
+     * @param response the JSON-encoded server response
+     * @return the command string and provided data (or null if the response could not be parsed)
+     */
     private Pair<String, String> parseJsonResponse(String response){
         try {
             JSONObject obj = new JSONObject(response);
@@ -135,6 +162,13 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         return null;
     }
 
+    /**
+     * Performs the HTTP-POST in a background thread.
+     * (performing it on the main thread is not allowed by android and will lead to an exception)
+     * POSTs the updated location data and returns the command/data sent in the response (if any)
+     * @param params parameters (IMEI, latitude, longitude, accuracy)
+     * @return the command/data received in response (or null if no command was received)
+     */
     @Override
     protected Pair<String, String> doInBackground(String... params) {
         String imei = params[0];
@@ -170,10 +204,15 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
                 conn.disconnect();
             }
         }
-
         return null;
     }
 
+    /**
+     * Called after the POST-request was completed.
+     * If a command was received from the server, the command will be forwarded to the
+     * CommandReceiver using a local broadcast
+     * @param result the command/data returned by the server (possibly none)
+     */
     @Override
     protected void onPostExecute(Pair<String, String> result){
         if(result != null){
@@ -181,6 +220,11 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         }
     }
 
+    /**
+     * Sends the local command broadcast
+     * @param cmd the received command
+     * @param data the received data
+     */
     private void sendCmdBroadcast(String cmd, String data){
         Intent cmdIntent = new Intent(BROADCAST_CMD_RECEIVED);
         cmdIntent.putExtra(EXTRA_CMD, cmd);

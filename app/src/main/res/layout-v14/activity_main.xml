@@ -17,8 +17,8 @@
             android:text="Update Interval (s):"
             android:id="@+id/lblInterval"
             android:layout_below="@+id/cbAdmin"
-            android:layout_alignLeft="@+id/btnSend"
-            android:layout_alignStart="@+id/btnSend"
+            android:layout_alignLeft="@+id/btnUpdate"
+            android:layout_alignStart="@+id/btnUpdate"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp" />
 
@@ -26,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_send"
-            android:onClick="sendMessage"
-            android:id="@+id/btnSend"
+            android:onClick="onBtnUpdateClick"
+            android:id="@+id/btnUpdate"
             android:layout_below="@+id/lblInterval"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -40,7 +40,7 @@
             android:id="@+id/svLog"
             android:layout_gravity="center_horizontal"
             android:fillViewport="true"
-            android:layout_below="@+id/btnLock">
+            android:layout_below="@+id/btnUpdate">
     
             <TextView
                 android:layout_width="wrap_content"
@@ -74,16 +74,6 @@
             android:layout_marginLeft="10dp"
             android:clickable="true"
             android:enabled="true" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Test Device Lock"
-            android:id="@+id/btnLock"
-            android:layout_below="@+id/btnSend"
-            android:layout_alignLeft="@+id/btnSend"
-            android:layout_alignStart="@+id/btnSend"
-            android:onClick="onBtnLockClick" />
 
     </RelativeLayout>
 

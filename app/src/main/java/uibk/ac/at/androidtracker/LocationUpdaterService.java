@@ -23,7 +23,6 @@ public class LocationUpdaterService
             GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
     public static final String ACTION_START_UPDATING = "uibk.ac.at.androidtracker.action.START_UPDATING";
 
-
     public static final String BROADCAST_LOCATION_UPDATE = "uibk.ac.at.androidtracker.LOCATION_UPDATE";
 
     public static final String EXTRA_UPDATE_INTERVAL = "uibk.ac.at.androidtracker.UPDATEINTERVAL";
@@ -117,7 +116,6 @@ public class LocationUpdaterService
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("in location Changed");
         String latitude = String.valueOf(location.getLatitude());
         String longitude = String.valueOf(location.getLongitude());
         String locationString = "Location Update: " + latitude
