@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	} 
 	
 	//check whether imei consists of 15 digits!
-	$pattern = '/^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/';
+	$pattern = '/^[0-9]{15}$/';
 	if(!preg_match($pattern, $imei)) {
 		die("Error: IMEI does not consist of 15 digits!\n");
 	}
@@ -70,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$uname = quote_smart($uname, $conn);
 	$pw = quote_smart($pw, $conn);
 	$imei = quote_smart($imei, $conn);
-	$salt = quote_smart($salt, $conn);
 
 	//check whether IMEI is already registered
 	$query = "SELECT * FROM users WHERE IMEI = $imei";
@@ -88,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		exit("Error: username already exists!");
 	}
 
-	$query = "INSERT INTO users ( IMEI, USERNAME, PASSWORD, SALT) VALUES ($imei, $uname, $pw, $salt)";
+	$query = "INSERT INTO users ( IMEI, USERNAME, PASSWORD ) VALUES ($imei, $uname, $pw)";
 
 	if ($conn->query($query) === TRUE) {
 		$conn->close();
