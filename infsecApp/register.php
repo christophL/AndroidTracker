@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 	//compute hash of password, and store it instead of plaintext pw
 	$salt = generateSHA512Salt();
-	$pw = crypt($pw,$salt);
+	$pw = password_hash($pw, PASSWORD_BCRYPT);
 
 	//escape characters
 	$uname = quote_smart($uname, $conn);

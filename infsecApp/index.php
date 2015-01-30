@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		$row = $result->fetch_assoc();
 		$imei = $row["IMEI"];
 		$storedPw = $row["PASSWORD"];
-		if(crypt($pw, $storedPw) != $storedPw) {
+		if(!password_verify($pw, $storedPw)) {
 			die("Error: wrong password!\n");
 		}
 		$conn->close();
