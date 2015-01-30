@@ -41,28 +41,37 @@ public class LocationUpdaterService
 
     public void onCreate(){
         super.onCreate();
+        /*
+         * the locationUpdaterService itself listens for connection/connection failed events and
+         * location updates
+         */
         client = new LocationClient(this, this, this);
         loadDeviceId();
     }
 
+    /**
+     * Called when an Intent was received by the service (i.e. a "start updating" intent)
+     * Connects the location client to Google Play Services.
+     * @param intent the intent to be handled
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
+        if(intent == null) return;
+        final String action = intent.getAction();
 
-            if (ACTION_START_UPDATING.equals(action)) {
-                updateInterval = intent.getIntExtra(EXTRA_UPDATE_INTERVAL, 60);
-                handleActionStartUpdating();
+        if (ACTION_START_UPDATING.equals(action)) {
+            updateInterval = intent.getIntExtra(EXTRA_UPDATE_INTERVAL, 60);
+            if(servicesAvailable()){
+                client.connect();
             }
         }
     }
 
-    private void handleActionStartUpdating() {
-        if(servicesConnected()){
-            client.connect();
-        }
-    }
-
+    /**
+     * Called when Google Play services are connected to the location client.
+     * Sets the location client to provide location updates periodically
+     * @param bundle
+     */
     @Override
     public void onConnected(Bundle bundle) {
         LocationRequest locRequest = LocationRequest.create();
@@ -73,11 +82,20 @@ public class LocationUpdaterService
         sendUpdateBroadcast(EXTRA_STATUS, "Connected to Play Services.");
     }
 
+    /**
+     * Called when Google Play Services were disconnected from the location client.
+     * Logs this information.
+     */
     @Override
     public void onDisconnected() {
         sendUpdateBroadcast(EXTRA_STATUS, "Disconnected from Play Services.");
     }
 
+    /**
+     * Called when Google Play services could not be connected to the location client.
+     * Logs the error in the main activities log control
+     * @param connectionResult the result of the connection attempt, containing further information
+     */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         sendUpdateBroadcast(EXTRA_STATUS, "Connection failed");
@@ -86,7 +104,6 @@ public class LocationUpdaterService
                 // Start an Activity that tries to resolve the error
                 connectionResult.startResolutionForResult(new Activity(), CONNECTION_FAILURE_RESOLUTION_REQUEST);
             } catch (IntentSender.SendIntentException e) {
-                // Log the error
                 e.printStackTrace();
             }
         } else {
@@ -94,6 +111,10 @@ public class LocationUpdaterService
         }
     }
 
+    /**
+     * Sends a local broadcast to notify the main activity that some updates are available
+     * (e.g.: new location data, or errors -- mainly for logging)
+     */
     private void sendUpdateBroadcast(String type, String message){
         Intent updateIntent = new Intent(BROADCAST_LOCATION_UPDATE);
         updateIntent.putExtra(type, message);
@@ -101,7 +122,11 @@ public class LocationUpdaterService
     }
 
 
-    private boolean servicesConnected() {
+    /**
+     * Checks whether Google Play services is available (needed for the location API)
+     * @return true iff Google play services is available
+     */
+    private boolean servicesAvailable() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (ConnectionResult.SUCCESS == resultCode) {
             return true;
@@ -114,6 +139,11 @@ public class LocationUpdaterService
         }
     }
 
+    /**
+     * Called when the location client determined a new location.
+     * Sends the received location data to the server
+     * @param location the location returned from the location client
+     */
     @Override
     public void onLocationChanged(Location location) {
         String latitude = String.valueOf(location.getLatitude());
@@ -125,6 +155,9 @@ public class LocationUpdaterService
         new PostLocationTask(this).execute(imei, latitude, longitude, accuracy);
     }
 
+    /**
+     * Loads the device's IMEI needed by the server to identify received location data
+     */
     private void loadDeviceId(){
         if(imei != null) return;
         TelephonyManager tmgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);

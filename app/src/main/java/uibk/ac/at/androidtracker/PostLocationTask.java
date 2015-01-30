@@ -65,7 +65,7 @@ public class PostLocationTask extends AsyncTask<String, Void, Pair<String, Strin
         }
         HttpsURLConnection conn = null;
         try {
-            URL servUrl = new URL("https://192.168.0.14/infsecApp/store.php");
+            URL servUrl = new URL("https://192.168.43.194/infsecApp/store.php");
             conn = (HttpsURLConnection) servUrl.openConnection();
             conn.setSSLSocketFactory(sslCtx.getSocketFactory());
             //no need to do verification, we only trust our own certificate anyways

@@ -68,7 +68,7 @@ public class MainActivity extends Activity{
      * @param enable should the controls be enabled?
      */
     private void enableControls(boolean enable){
-        Button btnUpdates = (Button) findViewById(R.id.btnSend);
+        Button btnUpdates = (Button) findViewById(R.id.btnUpdate);
         EditText txtInterval = (EditText) findViewById(R.id.txtUpdateInterval);
         btnUpdates.setEnabled(enable);
         txtInterval.setEnabled(enable);
