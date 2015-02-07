@@ -8,3 +8,5 @@ androidTracker
 
 ##Android-app
 * The project can be imported and built using android-studio 
+* The server's IP address is hard-coded in the PostLocationTask class -- change it to the actual address of your server 
+* The server's certificate file should be put into the res/raw folder
